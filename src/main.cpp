@@ -13,6 +13,8 @@
 #define STAPSK "7GpfT5CG"
 #endif
 
+#define SIGNAL_PIN A0 //wather sensor data pin
+int value = 0; // variable to store the sensor wather value
 
 DHT dht(DHTPIN, DHTTYPE);
 
@@ -26,6 +28,7 @@ void handleRoot() {
 
   float h = dht.readHumidity();
   float t = dht.readTemperature();
+  value = analogRead(SIGNAL_PIN); // read the analog value from sensor
 
 
   StreamString temp;
@@ -53,6 +56,13 @@ temp.print("<p>Sensor Value =  ");
     temp.println(" *C");
   }
 temp.println("</p>");
+
+temp.print("<p>Wather sensor Value =  ");
+
+  temp.println(value);
+
+temp.println("</p>");
+
 temp.printf("\
 <script>\
     document.getElementById(\"on\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/on\");zapytanie.send();};\
