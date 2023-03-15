@@ -4,10 +4,17 @@
 #include <ESP8266mDNS.h>
 #include <StreamString.h>
 
+#include <DHT.h>
+#define DHTPIN 12   
+#define DHTTYPE DHT22   // DHT 22  (AM2302)
+
 #ifndef STASSID
 #define STASSID "PLAY_internet_2.4G_6D7"
 #define STAPSK "7GpfT5CG"
 #endif
+
+
+DHT dht(DHTPIN, DHTTYPE);
 
 const char *ssid = STASSID;
 const char *password = STAPSK;
@@ -16,6 +23,11 @@ ESP8266WebServer server(80);
 
 
 void handleRoot() {
+
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+
   StreamString temp;
   temp.reserve(500);  // Preallocate a large chunk to avoid memory fragmentation
   temp.printf("\
@@ -28,7 +40,20 @@ void handleRoot() {
 <p id=\"pomiar\">Wartość:</p>\
 <button id=\"on\">Włącz</button>\
 <button id=\"off\">Wyłącz</button><br>\
-<button id=\"download\">Pobierz obrazek</button>\
+<button id=\"download\">Pobierz obrazek</button>");
+temp.print("<p>Sensor Value =  ");
+  if (isnan(t) || isnan(h)) {
+    temp.println("Failed to read from DHT");
+  } else {
+    temp.print("Humidity: "); 
+    temp.print(h);
+    temp.print(" %\t");
+    temp.print("Temperature: "); 
+    temp.print(t);
+    temp.println(" *C");
+  }
+temp.println("</p>");
+temp.printf("\
 <script>\
     document.getElementById(\"on\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/on\");zapytanie.send();};\
     document.getElementById(\"off\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/off\");zapytanie.send();};\
@@ -64,12 +89,16 @@ void setup(void) {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.println("");
+  dht.begin();
+
 
   // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
+
+
 
   Serial.println("");
   Serial.print("Connected to ");
