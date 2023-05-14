@@ -3,23 +3,36 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <StreamString.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 
 #include <DHT.h>
 #define DHTPIN 12   
 #define DHTTYPE DHT22   // DHT 22  (AM2302)
 
 #ifndef STASSID
-#define STASSID "PLAY_internet_2.4G_6D7"
-#define STAPSK "7GpfT5CG"
+#define STASSID "PLAY_internet_2.4G_6D7" 
+#define STAPSK "7GpfT5CG"// TODO ustawić jako zmienna srodowiskowa aby haslo bylo ukryte
 #endif
 
 #define SIGNAL_PIN A0 //wather sensor data pin
+
+#define ZAW1 D0 //zawory
+#define ZAW2 D1 //zawory
+#define ZAW3 D2 //zawory
+#define ZAW4 D3 //zawory
+
 int value = 0; // variable to store the sensor wather value
 
 DHT dht(DHTPIN, DHTTYPE);
 
 const char *ssid = STASSID;
 const char *password = STAPSK;
+
+//declare functions
+String getTime();
+String dateAndTime=" ";
+//
 
 ESP8266WebServer server(80);
 
@@ -38,12 +51,13 @@ void handleRoot() {
 <head>\
     <title>Strona</title>\
     <meta charset=\"UTF-8\"/>\
+    <meta http-equiv=\"refresh\" content=\"1\">\
 </head>\
 <body>\
 <p id=\"pomiar\">Wartość:</p>\
 <button id=\"on\">Włącz</button>\
 <button id=\"off\">Wyłącz</button><br>\
-<button id=\"download\">Pobierz obrazek</button>");
+<button id=\"download\">Feature for later</button>");
 temp.print("<p>Sensor Value =  ");
   if (isnan(t) || isnan(h)) {
     temp.println("Failed to read from DHT");
@@ -56,6 +70,8 @@ temp.print("<p>Sensor Value =  ");
     temp.println(" *C");
   }
 temp.println("</p>");
+temp.println("Time:");
+temp.println(getTime());
 
 temp.print("<p>Wather sensor Value =  ");
 
@@ -137,4 +153,43 @@ void setup(void) {
 void loop(void) {
   server.handleClient();
   MDNS.update();
+  
+}
+
+bool wathering(){
+  return false;
+}
+
+String getTime(){
+const long utcOffsetInSeconds = 3600;
+
+char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+// Define NTP Client to get time
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", utcOffsetInSeconds);
+
+
+  while ( WiFi.status() != WL_CONNECTED ) {
+    delay ( 500 );
+  }
+  timeClient.begin();
+  timeClient.update();
+
+  Serial.print(daysOfTheWeek[timeClient.getDay()]);
+  Serial.print(", ");
+  Serial.print(timeClient.getHours());
+  Serial.print(":");
+  Serial.print(timeClient.getMinutes());
+  Serial.print(":");
+  Serial.println(timeClient.getSeconds());
+  //Serial.println(timeClient.getFormattedTime());
+  dateAndTime=daysOfTheWeek[timeClient.getDay()]+timeClient.getHours()+timeClient.getMinutes()+timeClient.getSeconds();
+
+  return (String)timeClient.getFormattedTime();
+
+}
+
+int difTime(){
+  return 0;
 }
