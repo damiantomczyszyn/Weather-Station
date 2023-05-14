@@ -5,6 +5,7 @@
 #include <StreamString.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
+#include <ArduinoJson.h>
 
 #include <DHT.h>
 #define DHTPIN 12   
@@ -34,6 +35,23 @@ String getTime();
 String dateAndTime=" ";
 //
 
+//weather api
+//https://randomnerdtutorials.com/esp8266-weather-forecaster/
+const char serverAPI[] = "api.openweathermap.org";
+String nameOfCity = "STYRZYNIEC,48"; 
+String apiKey = "REPLACE_WITH_YOUR_API_KEY"; 
+String text;
+int jsonend = 0;
+boolean startJson = false;
+int status = WL_IDLE_STATUS;
+#define JSON_BUFF_DIMENSION 2500
+
+
+unsigned long lastConnectionTime = 10 * 60 * 1000;     // last time you connected to the server, in milliseconds
+const unsigned long postInterval = 10 * 60 * 1000;  // posting interval of 10 minutes  (10L * 1000L; 10 seconds delay for testing)
+
+//
+
 ESP8266WebServer server(80);
 
 
@@ -51,10 +69,11 @@ void handleRoot() {
 <head>\
     <title>Strona</title>\
     <meta charset=\"UTF-8\"/>\
-    <meta http-equiv=\"refresh\" content=\"1\">\
+  <!--  <meta http-equiv=\"refresh\" content=\"1\"> -->  <!-- przeladowywanie strony co x sekund --> \
 </head>\
 <body>\
 <p id=\"pomiar\">Wartość:</p>\
+<p id=\"default\">1</p>\
 <button id=\"on\">Włącz</button>\
 <button id=\"off\">Wyłącz</button><br>\
 <button id=\"download\">Feature for later</button>");
@@ -111,7 +130,7 @@ void setup(void) {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(13, OUTPUT);
   digitalWrite(LED_BUILTIN, 0);
-  Serial.begin(115200);
+  Serial.begin(9600);
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.println("");
