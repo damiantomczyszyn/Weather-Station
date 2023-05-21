@@ -1,0 +1,13 @@
+- Co jakiś czas driver się resetuje i trzeba go instalować na nowo: CH340G driver install
+* Dodać włączanie manualne i wyłączanie każdego zaworu
+* Dodać system decyzyjny na podstawie api i aktualnej wartości czujnika.
+* Czujniki domyślnie są wyłączone. Włączają się gdy:
+    - ma być włączane podlewanie(pomiar w celu sprawdzenia czy nie jest mokro lub za gorąco)
+    - Odpowiadasz na request załadowania/przeładowania stronki. (może kiedyś będzie wspierało ajax, a nie przeładowania i auto odświerzania)
+    - 
+
+
+
+
+INFO:
+pin 13 jest używany on/off

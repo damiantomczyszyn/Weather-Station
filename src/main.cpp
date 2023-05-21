@@ -156,7 +156,7 @@ void setup(void) {
   server.on("/", handleRoot);
   server.on("/on", [](){
         digitalWrite(LED_BUILTIN, LOW);                                      //zapal diodę
-        digitalWrite(13, HIGH);   
+        digitalWrite(13, HIGH);   // pin13
         server.send(200);   });
   
   server.on("/off", []() {
