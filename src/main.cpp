@@ -244,8 +244,8 @@ void makehttpRequest() {
      Serial.println("connecting...");
     // send the HTTP PUT request:
 
-    client.println("GET " + serverPath + " HTTP/1.1");
-    //client.println("Host: api.openweathermap.org");
+    client.println("GET " + serverPath);
+    client.println("Host: api.openweathermap.org");
     client.println("User-Agent: Mozilla/5.0");
     //client.println("Connection: close");
     client.println();
@@ -265,7 +265,7 @@ void makehttpRequest() {
       c = client.read();
       // since json contains equal number of open and close curly brackets, this means we can determine when a json is completely received  by counting
       // the open and close occurences,
-      //Serial.print(c);
+      Serial.print(c);
       if (c == '{') {
         startJson = true;         // set startJson true to indicate json message has started
         jsonend++;
