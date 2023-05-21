@@ -10,4 +10,6 @@
 
 
 INFO:
-pin 13 jest używany on/off
+W JS nie moze być komentarzy html
+
+D0-D3 porty zaworow

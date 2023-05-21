@@ -73,9 +73,22 @@ void handleRoot() {
 </head>\
 <body>\
 <p id=\"pomiar\">Wartość:</p>\
-<p id=\"default\">1</p>\
-<button id=\"on\">Włącz</button>\
-<button id=\"off\">Wyłącz</button><br>\
+<!-- zawor nr 1 -->\
+<p id=\"default1\">1</p>\
+<button id=\"on1\">Włącz</button>\
+<button id=\"off1\">Wyłącz</button><br>\
+<!-- zawor nr 2 -->\
+<p id=\"default2\">2</p>\
+<button id=\"on2\">Włącz</button>\
+<button id=\"off2\">Wyłącz</button><br>\
+<!-- zawor nr 3 -->\
+<p id=\"default3\">3</p>\
+<button id=\"on3\">Włącz</button>\
+<button id=\"off3\">Wyłącz</button><br>\
+<!-- zawor nr 4 -->\
+<p id=\"default4\">4</p>\
+<button id=\"on4\">Włącz</button>\
+<button id=\"off4\">Wyłącz</button><br>\
 <button id=\"download\">Feature for later</button>");
 temp.print("<p>Sensor Value =  ");
   if (isnan(t) || isnan(h)) {
@@ -100,8 +113,14 @@ temp.println("</p>");
 
 temp.printf("\
 <script>\
-    document.getElementById(\"on\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/on\");zapytanie.send();};\
-    document.getElementById(\"off\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/off\");zapytanie.send();};\
+    document.getElementById(\"on1\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/on1\");zapytanie.send();};\
+    document.getElementById(\"off1\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/off1\");zapytanie.send();};\
+    document.getElementById(\"on2\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/on2\");zapytanie.send();};\
+    document.getElementById(\"off2\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/off2\");zapytanie.send();};\
+    document.getElementById(\"on3\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/on3\");zapytanie.send();};\
+    document.getElementById(\"off3\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/off3\");zapytanie.send();};\
+    document.getElementById(\"on4\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/on4\");zapytanie.send();};\
+    document.getElementById(\"off4\").onclick = function () {const zapytanie = new XMLHttpRequest();zapytanie.open(\"GET\", \"/off4\");zapytanie.send();};\
 </script>\
 </body>\
 </html>" );
@@ -128,7 +147,14 @@ void handleNotFound() {
 
 void setup(void) {
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(13, OUTPUT);
+
+
+  pinMode(ZAW1, OUTPUT);
+  pinMode(ZAW2, OUTPUT);
+  pinMode(ZAW3, OUTPUT);
+  pinMode(ZAW4, OUTPUT);
+ 
+
   digitalWrite(LED_BUILTIN, 0);
   Serial.begin(9600);
   WiFi.mode(WIFI_STA);
@@ -154,16 +180,56 @@ void setup(void) {
   if (MDNS.begin("esp8266")) { Serial.println("MDNS responder started"); }
 
   server.on("/", handleRoot);
-  server.on("/on", [](){
+
+  server.on("/on1", [](){
         digitalWrite(LED_BUILTIN, LOW);                                      //zapal diodę
-        digitalWrite(13, HIGH);   // pin13
-        server.send(200);   });
-  
-  server.on("/off", []() {
+        digitalWrite(ZAW1, HIGH);   
+        server.send(200);
+        Serial.println("Dzialanie na zaworze1 - on"); 
+           });  
+  server.on("/off1", []() {
       digitalWrite(LED_BUILTIN, HIGH);                                        //zgaś diodę
-      digitalWrite(13, LOW); 
+      digitalWrite(ZAW1, LOW); 
       server.send(200);   
+      Serial.println("Dzialanie na zaworze1 - off");
   });
+  server.on("/on2", [](){
+        digitalWrite(LED_BUILTIN, LOW);                                      //zapal diodę
+        digitalWrite(ZAW2, HIGH);   
+        server.send(200);
+        Serial.println("Dzialanie na zaworze2 - on"); 
+           });  
+  server.on("/off2", []() {
+      digitalWrite(LED_BUILTIN, HIGH);                                        //zgaś diodę
+      digitalWrite(ZAW2, LOW); 
+      server.send(200);   
+      Serial.println("Dzialanie na zaworze2 - off");
+  });
+  server.on("/on3", [](){
+        digitalWrite(LED_BUILTIN, LOW);                                      //zapal diodę
+        digitalWrite(ZAW3, HIGH);   
+        server.send(200);
+        Serial.println("Dzialanie na zaworze3 - on"); 
+          });  
+  server.on("/off3", []() {
+      digitalWrite(LED_BUILTIN, HIGH);                                        //zgaś diodę
+      digitalWrite(ZAW3, LOW); 
+      server.send(200);
+      Serial.println("Dzialanie na zaworze3 - off");   
+  });
+  server.on("/on4", [](){
+        digitalWrite(LED_BUILTIN, LOW);                                      //zapal diodę
+        digitalWrite(ZAW4, HIGH);   
+        server.send(200); 
+        Serial.println("Dzialanie na zaworze4 - on");
+          });         
+  server.on("/off4", []() {
+      digitalWrite(LED_BUILTIN, HIGH);                                        //zgaś diodę
+      digitalWrite(ZAW4, LOW); 
+      server.send(200);   
+      Serial.println("Dzialanie na zaworze4 - off");
+  });
+
   server.onNotFound(handleNotFound);
   server.begin();
   Serial.println("HTTP server started");
