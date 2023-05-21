@@ -7,7 +7,7 @@
 #include <WiFiUdp.h>
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
-
+#include <ESP8266HTTPClient.h>
 
 #include <DHT.h>
 #define DHTPIN 12   
@@ -35,8 +35,12 @@ const char *password = STAPSK;
 //declare functions
 String getTime();
 String dateAndTime=" ";
+
 //
 
+
+
+HTTPClient http;
 //weather api
 //https://randomnerdtutorials.com/esp8266-weather-forecaster/
 WiFiClient client;
@@ -158,6 +162,12 @@ void setup(void) {
   Serial.println(WiFi.localIP());
 
 
+  client.connect(server1, 80);
+  http.begin(client, "api.openweathermap.org/data/2.5/forecast?id=776175&appid=3db715609a637e8a4ba3f94c421dc703&units=metric");
+  http.GET();
+
+// Print the response
+Serial.print(http.getString());
 
 
   if (MDNS.begin("esp8266")) { Serial.println("MDNS responder started"); }
@@ -176,6 +186,11 @@ void setup(void) {
   server.onNotFound(handleNotFound);
   server.begin();
   Serial.println("HTTP server started");
+
+
+
+
+
 }
 
 void loop(void) {
@@ -244,8 +259,8 @@ void makehttpRequest() {
      Serial.println("connecting...");
     // send the HTTP PUT request:
 
-    client.println("GET " + serverPath + " HTTP/1.1");
-    //client.println("Host: api.openweathermap.org");
+    client.println("GET " + serverPath);
+    client.println("Host: api.openweathermap.org");
     client.println("User-Agent: Mozilla/5.0");
     //client.println("Connection: close");
     client.println();
